@@ -1,5 +1,7 @@
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 
 public class pw_check {
@@ -26,17 +28,35 @@ public class pw_check {
 
 	public static void buildTrie(DLBnode newDLB) throws IOException {
 		// TODO Auto-generated method stub
-		BufferedReader read = new BufferedReader(new FileReader(
-				"dictionary.txt"));
+		
+		/*BufferedReader read = new BufferedReader(new FileReader(
+				"dictionary.txt"));*/
+		
+		BufferedReader read = new BufferedReader(new FileReader("C:/Users/maurice/cs1501/DLB/src/small_dict.txt"));												//for testing purposes 
 		String s;
+		File file = new File("C:/Users/maurice/cs1501/DLB/src/my_dictionary.txt");
+		file.createNewFile();
+	    FileWriter writer = new FileWriter(file); 
 		while ((s = read.readLine()) != null) {
 			if (s.length() < 6) {
-				s += "'"; 													// the character ' signifies the end of the string
+				writer.write(s+"\n");
+				writer.write(System.getProperty( "line.separator" ));
+				
+				s += "'"; 													// the character ' signifies the end of the string in the trie
 				add(s);
 			}
 		}
+		//writer.flush();
+	    writer.close();
 		read.close();
+		printTrie(root, "");
+		
 
+	}
+	static void printTrie(DLBnode node, String prefix){
+		if (node.rightSib!=null){
+			printTrie()
+		}
 	}
 
 	static void add(String word) {
@@ -54,12 +74,10 @@ public class pw_check {
 
 		DLBnode currentNode = root;
 		for (int i = 0; i < word.length();) {
-			boolean check = false; // A FLAG TO CHECK IF THE LETTER WAS EVER
-									// FOUND, IF NOT WE ADD THE LETTER AT THE
-									// END
-			if (currentNode.rightSib != null) { // NEED NEXTNODE TO EXIST TO
-												// CHECK ITS LETTER
-				if (currentNode.val != word.charAt(i)) { // CHECK ROW
+			boolean check = false; 
+			if (currentNode.rightSib != null) { 
+												
+				if (currentNode.val != word.charAt(i)) {
 					currentNode = currentNode.rightSib;
 					check = true;
 				} else { // CHECK COLUMN
@@ -91,11 +109,12 @@ public class pw_check {
 	public static void main(String[] args) throws IOException {
 		// TODO Auto-generated method stub
 		DLBnode DLB = new DLBnode(' ', null, null);
-		if (args.length > 0) {
+		/*if (args.length > 0) {
 			if (args[0].equals("-g")) {
 				buildTrie(DLB);
 			}
-		}
+		}*/
+		buildTrie(DLB); 
 	}
 
 }
