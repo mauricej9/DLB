@@ -4,10 +4,13 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class pw_check {
 	static boolean empty = true;
 	private static DLBnode root;
+	static ArrayList<String> goodPass = new ArrayList<String>();
+	static ArrayList<String> badPass = new ArrayList<String>();
 
 	public pw_check() {
 
@@ -32,7 +35,7 @@ public class pw_check {
 		// BufferedReader read = new BufferedReader(new FileReader(
 		// "C:/Users/maurice/cs1501/DLB/src/dictionary.txt"));
 
-		DLBnode rootNode = root;
+		//DLBnode rootNode = root;
 		BufferedReader read = new BufferedReader(new FileReader(
 				"C:/Users/maurice/cs1501/DLB/src/small_dict.txt")); // for
 																	// testing
@@ -46,10 +49,11 @@ public class pw_check {
 			if (s.length() < 6) {
 				writer.write(s + "\n");
 				writer.write(System.getProperty("line.separator"));
-
+				//badPass.add(s);
 				s += "'"; // the character ' signifies the end of the string in
 							// the trie
 				add(s);
+				badPass.add(s);
 				leetAdd(s);
 			}
 		}
@@ -74,14 +78,14 @@ public class pw_check {
 		DLBnode node = root;
 		// boolean found=false;
 		for (int i = 0; i < s.length();) {
-			//System.out.println("node val: " + node.val);
-			//System.out.println("char: " + s.charAt(i));
+			// System.out.println("node val: " + node.val);
+			// System.out.println("char: " + s.charAt(i));
 			if (node.val == s.charAt(i)) {
 				node = node.child;
 				i++;
-			} else if (node.val != s.charAt(i) && node.rightSib != null) {
+			} else if (node.rightSib != null) {
 				node = node.rightSib;
-			} else if (node.val != s.charAt(i) && node.rightSib == null) {
+			} else if (node.rightSib == null) {
 				return false;
 			}
 		}
@@ -90,18 +94,17 @@ public class pw_check {
 	}
 
 	static void leetAdd(String s) throws IOException {
-		//System.out.println("s: "+s);
+		// System.out.println("s: "+s);
 		String temp;
 		for (int i = 0; i < s.length(); i++) {
-			
+
 			if (s.charAt(i) == 'i' || s.charAt(i) == 'a' || s.charAt(i) == 'l'
 					|| s.charAt(i) == 'e' || s.charAt(i) == 's'
 					|| s.charAt(i) == 'o' || s.charAt(i) == 't') {
-				//System.out.println("i:"+i);
+				// System.out.println("i:"+i);
 				temp = changeLetter(s, i);
-				//System.out.println(temp);
+				// System.out.println(temp);
 				leetAdd(temp);
-				
 
 			}
 		}
@@ -110,110 +113,56 @@ public class pw_check {
 	public static String changeLetter(String s, int i) throws IOException {
 		String word = "";
 		for (int j = 0; j < s.length(); j++) {
-			//System.out.println("charAt(j): "+s.charAt(j));
+			// System.out.println("charAt(j): "+s.charAt(j));
 			if (j == i) {
 				if (s.charAt(j) == 'i' || s.charAt(j) == 'l')
 					word += '1';
 				if (s.charAt(j) == 'a')
-					word+='4';
+					word += '4';
 				if (s.charAt(j) == 't')
-					word+='7';
+					word += '7';
 				if (s.charAt(j) == 'e')
-					word+='3';
+					word += '3';
 				if (s.charAt(j) == 's')
-					word+='5';
+					word += '5';
 				if (s.charAt(j) == 'o')
-					word+='0';
-				
-			}else{
-				word+=s.charAt(j);
+					word += '0';
+
+			} else {
+				word += s.charAt(j);
 			}
 		}
-		System.out.println("word: "+word);
-		/*File file = new File(
-				"C:/Users/maurice/cs1501/DLB/src/my_dictionary.txt");
-		if (file.exists()) {
-			System.out.println("file exists");
+		//System.out.println("word: " + word);
+		/*
+		 * File file = new File(
+		 * "C:/Users/maurice/cs1501/DLB/src/my_dictionary.txt"); if
+		 * (file.exists()) { System.out.println("file exists"); } FileWriter fw
+		 * = new FileWriter(file.getAbsoluteFile()); BufferedWriter bw = new
+		 * BufferedWriter(fw); bw.write(word); bw.close();
+		 */
+		if (!badPass.contains(word)) {
+			try {
+				String filename = "C:/Users/maurice/cs1501/DLB/src/my_dictionary.txt";
+				FileWriter fw = new FileWriter(filename, true); // the true will
+																// append the
+																// new data
+				fw.write(word);// appends the string to the file
+				fw.write(System.getProperty("line.separator"));
+				fw.close();
+			} catch (IOException ioe) {
+				System.err.println("IOException: " + ioe.getMessage());
+			}
+			badPass.add(word);
+			add(word);
 		}
-		FileWriter fw = new FileWriter(file.getAbsoluteFile());
-		BufferedWriter bw = new BufferedWriter(fw);
-		bw.write(word);
-		bw.close();*/
-		
-		try
-		{
-		    String filename= "C:/Users/maurice/cs1501/DLB/src/my_dictionary.txt";
-		    FileWriter fw = new FileWriter(filename,true); //the true will append the new data
-		    fw.write(word);//appends the string to the file
-		    fw.write(System.getProperty("line.separator"));
-		    fw.close();
-		}
-		catch(IOException ioe)
-		{
-		    System.err.println("IOException: " + ioe.getMessage());
-		}
-		add(word);
 		return word;
 	}
 
 	static void add(String word) {
-		if (empty) {
-
-			root = new DLBnode(word.charAt(0), null, null);
-			// System.out.println("0: " + root.val);
-			root.child = new DLBnode(' ', null, null);
-			DLBnode currNode = root.child;
-			for (int i = 1; i < word.length(); ++i) {
-
-				currNode = new DLBnode(word.charAt(i), null, null);
-				// System.out.println(i + ": " + currNode.val);
-				currNode = currNode.child;
-			}
-
-			empty = false;
-			return;
-		} else {
-			if (root == null) {
-				// System.out.println("yes"); // for testing purposes
-			}
-			DLBnode currentNode = root;
-			for (int i = 0; i < word.length();) {
-				// boolean check = false;
-				// System.out.println(word+"----------"+word.charAt(i));
-				// System.out.println("val: "+currentNode.val);
-				if (currentNode.val == word.charAt(i)) { // checks if char
-															// matches the
-															// node's val
-					currentNode = currentNode.child;
-					i++;
-				} else {
-					if (currentNode.rightSib == null) { // if char doesnt match
-														// val & rightSib doesnt
-														// exist
-						currentNode.rightSib = new DLBnode(word.charAt(i),
-								null, null);
-						currentNode = currentNode.rightSib;
-						currentNode.child = new DLBnode(' ', null, null);
-						for (int a = i; a < word.length(); a++) {
-							currentNode = new DLBnode(word.charAt(a), null,
-									null);
-							//System.out.println(a + ": " + currentNode.val);
-							if (word.charAt(a) != '\'') {
-								currentNode.child = new DLBnode(' ', null, null);
-								currentNode = currentNode.child;
-
-							}
-						}
-						break;
-					} else if (currentNode.rightSib != null) {
-						// if rightSib exists then move currentNode to rightSib
-						// and repeat for loop
-						currentNode = currentNode.rightSib;
-					}
-
-				}
-				// System.out.println(i + ": " + currentNode.val);
-
+		DLBnode node =root;
+		for ( int i=0; i< word.length();){
+			if (node.child==null){
+				
 			}
 		}
 	}
@@ -225,9 +174,12 @@ public class pw_check {
 		 * if (args.length > 0) { if (args[0].equals("-g")) { buildTrie(DLB); }
 		 * }
 		 */
-		//leetAdd("the");
+		// leetAdd("the");
 		buildTrie(DLB);
-		//System.out.println(search("bear"));
+		for (int i=0; i<badPass.size(); i++){
+			//System.out.println(badPass.get(i));
+		}
+		System.out.println(search("them"));
 	}
 
 }
