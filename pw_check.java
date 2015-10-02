@@ -177,7 +177,12 @@ public class pw_check {
 		}
 	}
 	
-	static void generateGoodPasswords(){
+	static void generateGoodPasswords() throws IOException{
+		File statText = new File("C:/Users/maurice/cs1501/DLB/src/good_dictionary.txt");
+        statText.createNewFile();
+        FileOutputStream is = new FileOutputStream(statText);
+        OutputStreamWriter osw = new OutputStreamWriter(is);    
+        Writer w = new BufferedWriter(osw);
 		char[] chars= {'b','c','d','e','f','g','h','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','1','2','3','4','5','6','7','8','9','0','!','@','$','%','&','*'};
 		for (int a=0; a<chars.length; a++){
 			for (int b=0; b<chars.length; b++){
@@ -185,13 +190,61 @@ public class pw_check {
 					for (int d=0; d<chars.length; d++){
 						for (int e=0; e<chars.length; e++){
 							char[] pass={chars[a],chars[b],chars[c],chars[d],chars[e]};
-							System.out.println(Character.toString(pass[0])+Character.toString(pass[1])+Character.toString(pass[2])+Character.toString(pass[3])+Character.toString(pass[4]));
-							String password=pass.toString();
+							//System.out.println(Character.toString(pass[0])+Character.toString(pass[1])+Character.toString(pass[2])+Character.toString(pass[3])+Character.toString(pass[4]));
+							int nums=0;
+							int syms=0;
+							
+							for (int i=0; i<pass.length; i++){
+								if ((int)pass[i]>47&&(int)pass[i]<58){
+									nums++;
+								}
+								if ((int)pass[i]==33||(int)pass[i]==36||(int)pass[i]==37||(int)pass[i]==38||(int)pass[i]==64||(int)pass[i]==42){
+									syms++;
+								}
+								
+							}
+							if (nums > 0 && nums < 3 && syms > 0 && syms < 3) {
+								/*System.out.println(Character.toString(pass[0])
+										+ Character.toString(pass[1])
+										+ Character.toString(pass[2])
+										+ Character.toString(pass[3])
+										+ Character.toString(pass[4]));*/
+								
+								String password=String.valueOf(pass);
+								//w.write(password);
+				    			//w.write(System.getProperty("line.separator"));
+								boolean check=false;
+								
+										if (search(password.substring(0,2)))check=true;
+										if (search(password.substring(1,3)))check=true;
+										if (search(password.substring(2,4)))check=true;
+										if (search(password.substring(3,5)))check=true;
+										if (search(password.substring(0,3)))check=true;
+										if (search(password.substring(1,4)))check=true;
+										if (search(password.substring(2,5)))check=true;
+										if (search(password.substring(0,4)))check=true;
+										if (search(password.substring(1,5)))check=true;
+										
+									
+								
+								if (!check){
+									w.write(password);
+					    			w.write(System.getProperty("line.separator"));
+					    			
+									
+									/*System.out.println(Character.toString(pass[0])
+											+ Character.toString(pass[1])
+											+ Character.toString(pass[2])
+											+ Character.toString(pass[3])
+											+ Character.toString(pass[4]));*/
+								}
+							}
 						}
 					}
 				}
 			}
 		}
+		w.close();
 	}
 
 	public static void main(String[] args) throws IOException {
@@ -202,6 +255,7 @@ public class pw_check {
 		 try {
 	            //Whatever the file path is.
 	            File statText = new File("C:/Users/maurice/cs1501/DLB/src/my_dictionary.txt");
+	            statText.createNewFile();
 	            FileOutputStream is = new FileOutputStream(statText);
 	            OutputStreamWriter osw = new OutputStreamWriter(is);    
 	            Writer w = new BufferedWriter(osw);
